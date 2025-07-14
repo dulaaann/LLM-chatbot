@@ -1,14 +1,14 @@
 import streamlit as st
 from PyPDF2 import PdfReader 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.vectorstores import FAISS
 import json
 
 with open("env.json") as f:
     env = json.load(f)
 
-API_KEY = env["OPEN_AI_API_KEY"]
+GOOGLE_API_KEY = env["GOOGLE_API_KEY"]
 
 #upload pdf files
 st.header("Dulan's chatbot")
@@ -35,10 +35,13 @@ if file is not None:
     chunks = text_splitter.split_text(text)
     
 #Generating embaddings
-    embaddings = OpenAIEmbeddings(openai_api_key = API_KEY)
+    embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=GOOGLE_API_KEY
+)
 
 #Creating vector store
-    vector_store = FAISS.from_texts(chunks,embaddings)
+    vector_store = FAISS.from_texts(chunks,embeddings)
 
 #Get user question
     user_question = st.text_input("Type the question")
