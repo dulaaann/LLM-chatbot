@@ -29,9 +29,9 @@ if file is not None:
 
 #Break it into chunks
     text_splitter = RecursiveCharacterTextSplitter(
-        separators="\n",
-        chunk_size=1000,
-        chunk_overlap=150,
+        separators=["\n\n", "\n", "**", "* **"],  # Add topic separators
+        chunk_size=1500,
+        chunk_overlap=200,
         length_function=len
     )
     chunks = text_splitter.split_text(text)
@@ -50,14 +50,13 @@ if file is not None:
     user_question = st.text_input("Type the question")
 #do similarity search
     if user_question : 
-        matches = vector_store.similarity_search(user_question,k=3)
+        matches = vector_store.similarity_search(user_question)
         # for match in matches:
         #     st.write(match.page_content)
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.0-flash-exp",
             google_api_key=GOOGLE_API_KEY,
-            temperature=0,
-            max_tokens=1000
+            temperature=0
             )
 #output
         chain = load_qa_chain(llm,chain_type="stuff")
